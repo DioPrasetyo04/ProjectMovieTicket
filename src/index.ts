@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import connectDB from "./config/database";
 import adminRoutes from "./routes/adminRoutes";
 import bodyParser from "body-parser";
+import authRoutes from "./routes/authRoutes";
+import customerRoutes from "./routes/customerRoutes";
 
 dotenv.config();
 
@@ -15,6 +17,10 @@ connectDB();
 
 // supaya json tidak error alias bisa digunakan saat merequest atau mereturn dalam project express js
 app.use(bodyParser.json());
+
+app.use("/api", authRoutes);
+
+app.use("/api/customer", customerRoutes);
 
 app.use("/api/admin", adminRoutes);
 

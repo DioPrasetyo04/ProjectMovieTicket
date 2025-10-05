@@ -4,7 +4,7 @@ import { allowedFileTypes } from "./merge";
 
 // function storages untuk foto dan thumbnail
 export const thumbnailStorage = (
-  path = "public/images/thumbnails"
+  path: string = "public/images/thumbnails"
 ): StorageEngine => {
   // menggunakan multer diskstorage yang di install melalui npm i multer
   return multer.diskStorage({
@@ -55,7 +55,9 @@ export const imageFilter = (
   cb(null, true);
 };
 
-export const photoStorage = (path = "public/images/photos"): StorageEngine => {
+export const photoStorage = (
+  path: string = "public/images/photos"
+): StorageEngine => {
   return multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, path);

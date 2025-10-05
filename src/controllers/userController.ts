@@ -2,10 +2,11 @@ import { Request, Response } from "express";
 import { UserRepositories } from "../repositories/UserRepositories";
 import { UserService } from "../service/UserService";
 import { userSchema, userUpdateSchema } from "../utils/zodSchema";
-import path from "node:path";
+import path, { parse } from "node:path";
 import fs from "node:fs";
 import { walletServices } from "../service/walletServices";
 import { WalletRepositories } from "../repositories/WalletRepositories";
+import bcrypt from "bcrypt";
 
 const userRepos = new UserRepositories();
 const userServices = new UserService(userRepos);
@@ -95,6 +96,11 @@ export const postDataUser = async (req: Request, res: Response) => {
       });
     }
 
+    // umumnya salt yang digunakan adalah 10 untuk merandom password sebanyak 10 kali secara acak
+    if (parseData.data.password) {
+      parseData.data.password = bcrypt.hashSync(parseData.data.password, 10);
+    }
+
     const newUser = await userServices.postDataUser({
       ...parseData.data,
       photo: req.file.filename,
@@ -157,6 +163,11 @@ export const updateDataUser = async (req: Request, res: Response) => {
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
+    }
+
+    // umumnya salt yang digunakan adalah 10 untuk merandom password sebanyak 10 kali secara acak
+    if(req.body.password && parsedData.data.password){
+      parsedData.data.password = bcrypt.hashSync(parsedData.data.password, 10);
     }
 
     const updatedUser = await userServices.updateDataUser(email, {

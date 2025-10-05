@@ -7,6 +7,7 @@ const walletSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  // balance untuk saldo transaksi user
   balance: {
     type: Number,
     default: 0,
