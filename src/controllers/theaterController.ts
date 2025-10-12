@@ -33,9 +33,8 @@ export const getAllTheater = async (req: Request, res: Response) => {
 };
 
 export const postDataTheater = async (req: Request, res: Response) => {
-  const body = theaterSchema.parse(req.body);
-
   try {
+    const body = theaterSchema.parse(req.body);
     const newData = await theaterServices.postData(body);
 
     return res.status(200).json({
@@ -54,7 +53,7 @@ export const postDataTheater = async (req: Request, res: Response) => {
 
 export const updateDataTheater = async (req: Request, res: Response) => {
   const slug = req.params.slug as string;
-  const body = theaterUpdateSchema.parse(req.body);
+  const bodyData = theaterUpdateSchema.parse(req.body);
 
   const findDataTheater = await theaterServices.findDetailData(slug);
 
@@ -67,7 +66,7 @@ export const updateDataTheater = async (req: Request, res: Response) => {
   }
 
   try {
-    const updatedData = await theaterServices.updateData(slug, body);
+    const updatedData = await theaterServices.updateData(slug, bodyData);
 
     return res.json({
       data: updatedData,

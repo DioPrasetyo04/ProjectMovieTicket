@@ -80,33 +80,10 @@ export const getMovieDetail = async (req: Request, res: Response) => {
   try {
     const slug = req.params.slug as string;
 
-    const seats = [];
-
-    for (let i = 0; i < 5; i++) {
-      seats.push({
-        seat: `A${i + 1}`,
-        isBooked: false,
-      });
-    }
-
-    for (let i = 0; i < 5; i++) {
-      seats.push({
-        seat: `B${i + 1}`,
-        isBooked: false,
-      });
-    }
-
-    for (let i = 0; i < 5; i++) {
-      seats.push({
-        seat: `C${i + 1}`,
-        isBooked: false,
-      });
-    }
-
     const movie = await MovieModel.findOne({ slug })
       .populate({
         path: "theaters",
-        select: "name city slug",
+        select: "name city slug layout[total_rows, seat_per_row, seats[]]",
       })
       .populate({
         path: "genre",
@@ -118,7 +95,6 @@ export const getMovieDetail = async (req: Request, res: Response) => {
       data: {
         movie: {
           ...movie?.toJSON(),
-          seats,
           times: ["12.30", "14.50", "18.30", "23:30"],
         },
       },

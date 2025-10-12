@@ -1,3 +1,4 @@
+import { Movie } from "../fitur_interfaces/InterfaceMovie";
 import { IMovieRepositories } from "../interfaces/IMovieRepositories";
 
 export class MovieServices {
@@ -10,7 +11,7 @@ export class MovieServices {
     return await this.movieServices.findAllData();
   }
 
-  async postData(data: any) {
+  async postData(data: Movie) {
     const slug = data.title.toLowerCase().replace(/\s/g, "-");
     data.slug = slug;
     return await this.movieServices.postData({ ...data, slug });

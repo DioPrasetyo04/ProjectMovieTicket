@@ -12,6 +12,11 @@ export const theaterSchema = z
   .object({
     name: z.string().min(3, "Name must be at least 3 characters long"),
     city: z.string().min(3, "City must be at least 3 characters long"),
+    address: z.string().min(3, "Address must be at least 3 characters long"),
+    layout: z.object({
+      total_rows: z.number().min(1, "Total rows must be at least 1"),
+      seat_per_row: z.number().min(1, "Seat per row must be at least 1"),
+    }),
   })
   .strict();
 
@@ -26,10 +31,9 @@ export const movieSchema = z.object({
   available: z.boolean(),
   description: z
     .string()
-    .min(5, "Description must be at least 5 characters long")
-    .optional(),
+    .min(5, "Description must be at least 5 characters long"),
   price: z.number(),
-  bonus: z.string().optional(),
+  bonus: z.string(),
 });
 
 export const movieUpdateSchema = movieSchema.partial();

@@ -1,6 +1,7 @@
 import { Theater } from "../fitur_interfaces/InterfaceTheater";
 import ITheaterRepositories from "../interfaces/ITheaterRepositories";
 import TheaterModel from "../models/TheaterModel";
+import { seatGenerator } from "../utils/merge";
 
 export class TheaterServices {
   private theaterServices: any;
@@ -17,34 +18,38 @@ export class TheaterServices {
   }
 
   async postData(data: Theater) {
-    const { name, city } = data;
+    const { name, layout } = data;
 
-    if (name && city) {
-      const slug = name.toLowerCase().replace(/\s/g, "-");
-      return await this.theaterServices.postData({ ...data, slug });
-    } else {
-      throw new Error("Name and City is required");
+    if (!name) {
+      throw new Error("Name is required");
     }
 
-    // const { name, city } = data;
-    // if (!name) {
-    //   throw new Error("Name is required");
-    // }
-    // if (!city) {
-    //   throw new Error("City is required");
-    // }
-    // if (name && city) {
-    //   const slug = name.toLowerCase().replace(/\s/g, "-");
-    //   const theater = new TheaterModel({
-    //     name,
-    //     city,
-    //     slug,
-    //   });
-    //   return await theater.save();
-    // }
+    if (!layout?.total_rows && !layout?.seat_per_row) {
+      throw new Error(
+        "Layout configuration total_rows and seat_per_row is required"
+      );
+    }
+
+    const slug = name
+      .toLowerCase()
+      .replace(/\s/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
+
+    const generatedLayout = seatGenerator.generateSeatLayout(
+      layout.total_rows!,
+      layout.seat_per_row!
+    );
+
+    const theaterData: Theater = {
+      ...data,
+      slug,
+      layout: generatedLayout,
+    };
+
+    return await this.theaterServices.postData(theaterData);
   }
 
-  async updateData(slug: string, data: Theater) {
+  async updateData(slug: string, data: Partial<Theater>) {
     const findData = await this.theaterServices.findDetailData(slug);
 
     if (!findData) {
@@ -55,12 +60,29 @@ export class TheaterServices {
     let newSlug = findData.slug;
 
     if (data.name && data.name !== findData.name) {
-      newSlug = data.name.toLowerCase().replace(/\s/g, "-");
+      newSlug = data.name
+        .toLowerCase()
+        .replace(/\s/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+    }
+
+    // generate layout jika ada data baru
+    let updatedLayout = data.layout;
+    if (
+      data.layout &&
+      (data.layout.total_rows !== findData.layout?.total_rows ||
+        data.layout.seat_per_row !== findData.layout?.seat_per_row)
+    ) {
+      updatedLayout = seatGenerator.generateSeatLayout(
+        data.layout.total_rows!,
+        data.layout.seat_per_row!
+      );
     }
 
     return await this.theaterServices.updateData(slug, {
       ...data,
       slug: newSlug,
+      layout: updatedLayout,
     });
   }
 

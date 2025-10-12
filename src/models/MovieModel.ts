@@ -2,7 +2,7 @@ import mongoose, { model } from "mongoose";
 import GenreModel from "./GenreModel";
 import TheaterModel from "./TheaterModel";
 import { Movie } from "../fitur_interfaces/InterfaceMovie";
-import { getPublicThumbnailUrl } from "../utils/helper";
+import { getPublicThumbnailUrl, getVideoTrailerUrl } from "../utils/helper";
 
 const movieSchema = new mongoose.Schema(
   {
@@ -36,6 +36,10 @@ const movieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    video_trailer: {
+      type: String,
+      required: true,
+    },
     price: {
       type: Number,
       required: true,
@@ -59,6 +63,11 @@ const movieSchema = new mongoose.Schema(
         get() {
           // return public photoUrl project file
           return `${getPublicThumbnailUrl("thumbnails")}${this.thumbnail}`;
+        },
+      },
+      videoUrl: {
+        get() {
+          return `${getVideoTrailerUrl("trailers")}${this.video_trailer}`;
         },
       },
     },

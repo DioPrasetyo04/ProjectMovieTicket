@@ -1,7 +1,4 @@
 import express from "express";
-import multer from "multer";
-import { getPublicPhotoUrl } from "../../utils/helper";
-import { imageFilter, photoStorage } from "../../utils/multer";
 import {
   deleteDataUser,
   findDetailDataUser,
@@ -13,24 +10,21 @@ import {
 } from "../../controllers/userController";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { userSchema, userUpdateSchema } from "../../utils/zodSchema";
+import { uploadDynamic } from "../../utils/multer";
 
-const uploadPhoto = multer({
-  storage: photoStorage(),
-  fileFilter: imageFilter,
-});
 const userRoutes = express.Router();
 
 userRoutes.get("/users", getAllUser);
 userRoutes.post(
   "/users",
-  uploadPhoto.single("photo"),
+  uploadDynamic.single("photo"),
   postDataUser,
   validateRequest(userSchema)
 );
 userRoutes.get("/user/:email", findDetailDataUser);
 userRoutes.put(
   "/user/:email",
-  uploadPhoto.single("photo"),
+  uploadDynamic.single("photo"),
   updateDataUser,
   validateRequest(userUpdateSchema)
 );

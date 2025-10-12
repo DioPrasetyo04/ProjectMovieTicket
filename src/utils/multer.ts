@@ -1,17 +1,35 @@
-import multer, { FileFilterCallback, Multer, StorageEngine } from "multer";
+import multer, { StorageEngine } from "multer";
 import { Request } from "express";
-import { allowedFileTypes } from "./merge";
+import path from "node:path";
+import fs from "node:fs";
+import { allowedFileTypesPhoto, allowedFileTypesVideo } from "./merge";
 
 // function storages untuk foto dan thumbnail
-export const thumbnailStorage = (
-  path: string = "public/images/thumbnails"
-): StorageEngine => {
+export const dynamicStorage = (): StorageEngine => {
   // menggunakan multer diskstorage yang di install melalui npm i multer
   return multer.diskStorage({
     // destination file penyimpanan
     destination: (req, file, cb) => {
-      // callback file path
-      cb(null, path);
+      let uploadPath;
+
+      if (file.fieldname === "thumbnail") {
+        uploadPath = path.join("public", "images", "thumbnails");
+      } else if (file.fieldname === "video_trailer") {
+        uploadPath = path.join("public", "videos", "trailers");
+      } else {
+        // callback error must provide a string path as second arg per types
+        return cb(
+          new Error("Invalid fieldname, must be thumbnail or video_trailer"),
+          ""
+        );
+      }
+
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
+
+      // provide destination path
+      cb(null, uploadPath);
     },
     // nama file yang disimpan
     filename: (req, file, cb) => {
@@ -27,11 +45,11 @@ export const thumbnailStorage = (
         Math.random() * 1e9
       )}`;
 
+      const fileType = file.mimetype.split("/")[1];
+
       // membuat nama file dengan format fieldname-originalname-uniqueSuffix.extension
       // contoh: thumbnail-myphoto-2023-09-15-123456789.jpg
-      const fileName = `${file.fieldname}-${uniqueSuffix}.${
-        file.mimetype.split("/")[1]
-      }`;
+      const fileName = `${file.fieldname}-${uniqueSuffix}.${fileType}`;
 
       // callback fileName
       cb(null, fileName);
@@ -40,43 +58,37 @@ export const thumbnailStorage = (
 };
 
 // function filter image
-export const imageFilter = (
+export const fileFilter = (
   req: Request,
   file: Express.Multer.File,
-  cb: FileFilterCallback
+  cb: any
 ) => {
-  // validate file types
-  if (!allowedFileTypes.includes(file.mimetype)) {
-    // jika reject file tidak di simpan null error dan false
-    return cb(null, false);
+  // if (file.fieldname === "thumbnail" && !file.mimetype.startsWith("image/")) {
+  //   return cb(new Error("Invalid thumbnail file type"), false);
+  // }
+  // if (
+  //   file.fieldname === "video_trailer" &&
+  //   !file.mimetype.startsWith("video/")
+  // ) {
+  //   return cb(new Error("Invalid video file type"), false);
+  // }
+  if (
+    file.fieldname === "thumbnail" &&
+    !allowedFileTypesPhoto.includes(file.mimetype.split("/")[1])
+  ) {
+    return cb(new Error("Invalid thumbnail file type"), false);
   }
 
-  // tidak ada error dan simpan atau step selanjutnya
+  if (
+    file.fieldname === "video_trailer" &&
+    !allowedFileTypesVideo.includes(file.mimetype.split("/")[1])
+  ) {
+    return cb(new Error("Invalid video file type"), false);
+  }
   cb(null, true);
 };
 
-export const photoStorage = (
-  path: string = "public/images/photos"
-): StorageEngine => {
-  return multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, path);
-    },
-    filename: (req, file, cb) => {
-      const date = new Date();
-
-      const formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
-        .toString()
-        .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
-      const uniqueSuffix = `${formattedDate}-${Math.round(
-        Math.random() * 1e9
-      )}`;
-
-      const fileName = `${file.fieldname}-${uniqueSuffix}.${
-        file.mimetype.split("/")[1]
-      }`;
-
-      cb(null, fileName);
-    },
-  });
-};
+export const uploadDynamic = multer({
+  storage: dynamicStorage(),
+  fileFilter,
+});

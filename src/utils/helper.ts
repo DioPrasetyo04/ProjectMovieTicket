@@ -10,3 +10,9 @@ export const getPublicPhotoUrl = (path: "photos") => {
   const PORT = process.env.PORT ?? 3005;
   return `http://${HOST}:${PORT}/images/${path}/`;
 };
+
+export const getVideoTrailerUrl = (path: "trailers") => {
+  const HOST = process.env.HOST ?? "localhost";
+  const PORT = process.env.PORT ?? 3005;
+  return `http://127.0.0.1:3005`;
+};
