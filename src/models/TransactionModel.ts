@@ -42,6 +42,13 @@ const transactionSchema = new mongoose.Schema(
       type: Date,
       required: true,
     },
+    seats: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "TransactionSeat",
+        required: true,
+      },
+    ],
   },
   { timestamps: true }
 );

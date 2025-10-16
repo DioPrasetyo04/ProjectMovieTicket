@@ -45,6 +45,7 @@ export const login = async (req: Request, res: Response) => {
 
     const scretKey = process.env.SECRET_KEY ?? "";
 
+    // auth to jwt(json web token)
     const token = jwt.sign(
       {
         data: {
@@ -62,6 +63,17 @@ export const login = async (req: Request, res: Response) => {
       // kalkulasi expiresAt
       expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
     });
+
+    const now = new Date();
+
+    if (timeAuth?.expiresAt && timeAuth?.expiresAt <= now) {
+      await AuthModel.deleteOne({ _id: timeAuth._id });
+      return res.status(400).json({
+        message: "Token Expired",
+        data: null,
+        status: "failed",
+      });
+    }
 
     return res.status(200).json({
       message: "Login Success",

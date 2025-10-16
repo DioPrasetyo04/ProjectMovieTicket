@@ -53,3 +53,7 @@ export const authSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters long"),
   role: z.enum(["admin", "customer"]),
 });
+
+export const topUpSchema = z.object({
+  balance: z.number().min(1000, "Balance must be at least 1000"),
+});

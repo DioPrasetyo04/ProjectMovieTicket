@@ -6,6 +6,7 @@ import path from "node:path";
 import fs from "node:fs";
 import GenreModel from "../models/GenreModel";
 import TheaterModel from "../models/TheaterModel";
+import { ObjectId } from "mongoose";
 const movieRepo = new MovieRepositories();
 const movieService = new MovieServices(movieRepo);
 
@@ -73,6 +74,8 @@ export const postMovie = async (req: Request, res: Response) => {
 
     const newMovie = await movieService.postData({
       ...parseData.data,
+      genre: parseData.data.genre as unknown as ObjectId,
+      theaters: parseData.data.theaters as unknown as ObjectId[],
       thumbnail: files.thumbnail[0].filename,
       video_trailer: files.video_trailer[0].filename,
     });

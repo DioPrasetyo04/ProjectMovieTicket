@@ -8,6 +8,8 @@ type JWTPayload = {
   data: {
     id: string;
   };
+  iat: number;
+  exp: number;
 };
 
 export const verifyToken = async (
@@ -20,8 +22,13 @@ export const verifyToken = async (
   if (req.headers?.authorization?.split(" ")[0] === "JWT") {
     const token = req.headers?.authorization?.split(" ")[1];
     // verifikasi token dan add token to header request user id
+    // mengecek apakah token masih valid belum kadaluarsa
+    // mengembalikan data sesuai JWTPayload
+    // jwt verify harus ada screetToken
     const decoded = (await jwt.verify(token, secretKey)) as JWTPayload;
 
+    // find user by id from token
+    // Token hanya membawa user_id, tapi middleware melakukan query ke database berdasarkan ID tersebut, lalu menemukan user lengkap — termasuk relasinya dengan wallet.
     const user = await UsersModel.findById(decoded.data.id);
 
     if (!user) {
@@ -44,6 +51,7 @@ export const verifyToken = async (
     //   });
     // }
 
+    // Add user data to request JSON Web Token(JWT) di custom request
     req.user = {
       id: user.id,
       name: user.name,

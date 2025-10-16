@@ -1,9 +1,11 @@
+import { ObjectId } from "mongoose";
+
 export interface Movie {
   title: string;
   // foreign key ke model dan table genre
   slug?: string;
-  genre: string;
-  theaters: string[];
+  genre?: ObjectId;
+  theaters?: ObjectId[];
   description: string;
   thumbnail: string;
   video_trailer?: string;
