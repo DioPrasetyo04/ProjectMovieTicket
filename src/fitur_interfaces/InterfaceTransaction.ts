@@ -1,4 +1,4 @@
-import { ObjectId } from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 
 export interface Transaction {
   _id: string;
@@ -9,9 +9,6 @@ export interface Transaction {
   user_id?: ObjectId;
   movie_id?: ObjectId;
   theater_id?: ObjectId;
-}
-
-export interface TransactionSeat {
-  transaction_id?: ObjectId;
-  seat: string;
+  date?: String;
+  seats?: mongoose.Types.ObjectId[];
 }

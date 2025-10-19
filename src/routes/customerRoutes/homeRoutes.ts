@@ -7,6 +7,9 @@ import {
   getMovieDetail,
   getMoviesFilter,
 } from "../../controllers/homeController";
+import { validateRequest } from "../../middlewares/validateRequest";
+import { transactionSchema } from "../../utils/zodSchema";
+import { transactionTicket } from "../../controllers/ticketController";
 
 const homeRoutes = express.Router();
 
@@ -16,5 +19,10 @@ homeRoutes.get("/genres", getGenres);
 homeRoutes.get("/genres3", get3Genres);
 homeRoutes.get("/movie/:slug", getMovieDetail);
 homeRoutes.get("/browse-movies/:slug", getMoviesFilter);
+homeRoutes.post(
+  "/transaction/buy",
+  validateRequest(transactionSchema),
+  transactionTicket
+);
 
 export default homeRoutes;

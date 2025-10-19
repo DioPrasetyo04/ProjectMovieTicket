@@ -147,9 +147,33 @@ export const toUpBalance = async (req: CustomRequest, res: Response) => {
 
     await topUpWalletUser.save();
 
+    const findWalletTransaction = await WalletTransactionModel.findOne({
+      _id: topUpWalletUser._id,
+    });
+
+    if (!findWalletTransaction) {
+      return res.status(500).json({
+        message: "Failed to find newly created transaction.",
+        status: "false",
+      });
+    }
+
+    const newBalance =
+      findWalletTransaction.price + (findWalletUser.balance ?? 0);
+
+    const updateWallet = await WalletModel.findOneAndUpdate(
+      { user_id: req.user?.id },
+      // setter value by javaScript
+      { $set: { balance: newBalance } },
+      { new: true }
+    ).select("balance");
+
     return res.status(200).json({
       message: "Success To Up Data Wallet",
-      data: midtransJson,
+      data: {
+        DatamidtransJson: midtransJson,
+        DataWallet: updateWallet,
+      },
       status: "true",
     });
   } catch (error) {

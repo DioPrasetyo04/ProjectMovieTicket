@@ -1,7 +1,4 @@
-import {
-  Transaction,
-  TransactionSeat,
-} from "../fitur_interfaces/InterfaceTransaction";
+import { TransactionSeat } from "../fitur_interfaces/InterfaceTransactionSeat";
 import ITransactionRepositories from "../interfaces/ITransactionRepositories";
 import TransactionSeatModel from "../models/TransactionSeatModel";
 

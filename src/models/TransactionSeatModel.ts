@@ -7,12 +7,10 @@ const TransactionSeatSchema = new mongoose.Schema({
     ref: "Transaction",
     required: true,
   },
-  seat: [
-    {
-      type: String,
-      required: true,
-    },
-  ],
+  seat: {
+    type: String,
+    required: true,
+  },
 });
 
 export default mongoose.model<TransactionSeat>(

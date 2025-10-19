@@ -57,3 +57,16 @@ export const authSchema = z.object({
 export const topUpSchema = z.object({
   balance: z.number().min(1000, "Balance must be at least 1000"),
 });
+
+export const transactionSchema = z
+  .object({
+    subtotal: z.number(),
+    total: z.number(),
+    bookingFee: z.number(),
+    tax: z.number(),
+    movieId: z.string().min(1, "Movie ID is required"),
+    theaterId: z.string().min(1, "Theater ID is required"),
+    seats: z.array(z.string()).min(1, "At least one seat is required"),
+    date: z.string(),
+  })
+  .strict();

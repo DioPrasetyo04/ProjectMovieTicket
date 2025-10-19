@@ -44,8 +44,8 @@ const transactionSchema = new mongoose.Schema(
     },
     seats: [
       {
-        type: mongoose.Schema.Types.ObjectId,
         ref: "TransactionSeat",
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
       },
     ],

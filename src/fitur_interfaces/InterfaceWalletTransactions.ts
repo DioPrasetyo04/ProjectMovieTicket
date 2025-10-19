@@ -2,6 +2,6 @@ import { ObjectId } from "mongoose";
 
 export interface WalletTransactions {
   wallet_id?: ObjectId;
-  price?: number;
+  price: number;
   status?: string;
 }
