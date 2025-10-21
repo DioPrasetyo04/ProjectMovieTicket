@@ -9,7 +9,11 @@ import {
 } from "../../controllers/homeController";
 import { validateRequest } from "../../middlewares/validateRequest";
 import { transactionSchema } from "../../utils/zodSchema";
-import { transactionTicket } from "../../controllers/ticketController";
+import {
+  getOrderDetail,
+  getOrders,
+  transactionTicket,
+} from "../../controllers/ticketController";
 
 const homeRoutes = express.Router();
 
@@ -24,5 +28,7 @@ homeRoutes.post(
   validateRequest(transactionSchema),
   transactionTicket
 );
+homeRoutes.get("/orders", getOrders);
+homeRoutes.get("/orders/:id", getOrderDetail);
 
 export default homeRoutes;

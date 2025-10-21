@@ -82,3 +82,112 @@ export const transactionTicket = async (req: CustomRequest, res: Response) => {
     });
   }
 };
+
+export const getOrders = async (req: CustomRequest, res: Response) => {
+  try {
+    const findTransaction = await TransactionModel.find({
+      user_id: req.user?.id,
+    })
+      .select("seats theater_id movie_id date status")
+      .populate({
+        path: "movie_id",
+        model: "Movie",
+        select: "thumbnail video_trailer title genre _id",
+        populate: {
+          path: "genre",
+          model: "Genre",
+          select: "name slug _id",
+        },
+      })
+      .populate({
+        path: "seats",
+        model: "TransactionSeat",
+        select: "seat _id",
+      })
+      .populate({
+        path: "theater_id",
+        model: "Theater",
+        select: "name city slug _id",
+        // exclude total_seats menggunakan rest
+        // transform: (theater) => {
+        //   if (theater) {
+        //     const { total_seats, ...rest } = theater.toObject()
+        //       ? theater.toObject()
+        //       : theater;
+        //     return rest;
+        //   }
+        //   return theater;
+        // },
+        transform: (theater) => {
+          if (theater) {
+            const { name, city, slug, _id } = theater.toObject()
+              ? theater.toObject()
+              : theater;
+            return { name, city, slug, _id };
+          }
+          return theater;
+        },
+      });
+
+    return res.status(200).json({
+      message: "Get Data Orders Success",
+      data: findTransaction,
+      status: "success",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: "Failed Get Data Orders",
+      status: "failed",
+      data: err instanceof Error ? err.message : err,
+    });
+  }
+};
+
+export const getOrderDetail = async (req: CustomRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const findDetailTransaction = await TransactionModel.findById(id)
+      .populate({
+        path: "movie_id",
+        model: "Movie",
+        select: "thumbnail title genre _id",
+        populate: {
+          path: "genre",
+          model: "Genre",
+          select: "name slug _id",
+        },
+      })
+      .populate({
+        path: "seats",
+        model: "TransactionSeat",
+        select: "seat _id",
+      })
+      .populate({
+        path: "theater_id",
+        model: "Theater",
+        select: "name city slug _id",
+        transform: (theater) => {
+          if (theater) {
+            const { name, city, slug, _id } = theater.toObject()
+              ? theater.toObject()
+              : theater;
+            return { name, city, slug, _id };
+          }
+          return theater;
+        },
+      });
+
+    return res.status(200).json({
+      message: "Get Data Detail Order Success",
+      data: findDetailTransaction,
+      status: "success",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed Get Data Detail Order",
+      status: "failed",
+      data: error instanceof Error ? error.message : error,
+    });
+  }
+};
