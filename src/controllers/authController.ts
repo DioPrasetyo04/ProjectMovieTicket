@@ -25,7 +25,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(404).json({
         message: "User Not Found or Email Not Registration",
         data: null,
-        status: "failed",
+        info: "failed",
       });
     }
 
@@ -39,7 +39,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({
         message: "Email/Password Invalid",
         data: null,
-        status: "failed",
+        info: "failed",
       });
     }
 
@@ -68,10 +68,10 @@ export const login = async (req: Request, res: Response) => {
 
     if (timeAuth?.expiresAt && timeAuth?.expiresAt <= now) {
       await AuthModel.deleteOne({ _id: timeAuth._id });
-      return res.status(400).json({
+      return res.status(401).json({
         message: "Token Expired",
         data: null,
-        status: "failed",
+        info: "failed",
       });
     }
 
@@ -85,12 +85,13 @@ export const login = async (req: Request, res: Response) => {
         token: `JWT ${token}`,
         expiresAt: timeAuth.expiresAt,
       },
+      info: "success",
     });
   } catch (err) {
     return res.status(500).json({
       message: "Failed Login Maybe Database Error Not Connexted",
       data: err,
-      status: "failed",
+      info: "failed",
     });
   }
 };

@@ -78,6 +78,19 @@ const movieSchema = new mongoose.Schema(
   }
 );
 
+// ====== VIRTUALS ======
+// movieSchema.virtual("thumbnailUrl").get(function () {
+//   return `${getPublicThumbnailUrl("thumbnails")}${this.thumbnail}`;
+// });
+
+// movieSchema.virtual("videoUrl").get(function () {
+//   return `${getVideoTrailerUrl("trailers")}${this.video_trailer}`;
+// });
+
+// Aktifkan virtuals di toJSON / toObject
+// movieSchema.set("toJSON", { virtuals: true });
+// movieSchema.set("toObject", { virtuals: true });
+
 // proses foreign key ke genre dan theater
 // jika ada interaksi post dan saving data movie
 movieSchema.post("save", async (doc) => {

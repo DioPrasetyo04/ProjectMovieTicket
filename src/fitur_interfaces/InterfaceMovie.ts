@@ -12,4 +12,6 @@ export interface Movie {
   price: number;
   available: boolean;
   bonus: string;
+  thumbnailUrl?: string;
+  videoUrl?: string;
 }

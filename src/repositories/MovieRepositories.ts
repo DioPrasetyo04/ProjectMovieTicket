@@ -16,9 +16,9 @@ export class MovieRepositories implements IMovieRepositories {
         path: "theaters",
         model: TheaterModel,
         select: "name city slug",
-      })
-      // lean menjadikan data yang diambil dari database menjadi plain object atau json object bukan mongoose object yang ada method save, update, delete, dll
-      .lean();
+      });
+    // lean menjadikan data yang diambil dari database menjadi plain object atau json object bukan mongoose object yang ada method save, update, delete, virtuals, dll
+    // .lean({ virtuals: true });
 
     return movies;
   }
