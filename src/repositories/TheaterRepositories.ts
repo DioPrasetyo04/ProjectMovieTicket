@@ -3,11 +3,19 @@ import ITheaterRepositories from "../interfaces/ITheaterRepositories";
 import TheaterModel from "../models/TheaterModel";
 export class TheaterRepositories implements ITheaterRepositories {
   async getAllData(): Promise<Theater[]> {
-    return await TheaterModel.find();
+    return await TheaterModel.find().populate({
+      path: "movies",
+      model: "Movie",
+      select: "title slug thumbnail",
+    });
   }
 
   async findDetailData(slug: string): Promise<Theater | null> {
-    return await TheaterModel.findOne({ slug });
+    return await TheaterModel.findOne({ slug }).populate({
+      path: "movies",
+      model: "Movie",
+      select: "title slug thumbnail",
+    });
   }
 
   async postData(data: Theater): Promise<Theater> {

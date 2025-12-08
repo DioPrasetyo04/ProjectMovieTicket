@@ -1,9 +1,11 @@
+import { ObjectId } from "mongoose";
+
 export interface Theater {
   name?: string;
   slug?: string;
   city?: string;
   address?: string;
-  movies?: string[];
+  movies?: ObjectId[];
   total_rows?: number;
   seat_per_row?: number;
   layout?: {

@@ -5,7 +5,11 @@ import GenreModel from "../models/GenreModel";
 export class GenreRepositories implements IGenreRepositories {
   async findAllData(): Promise<Genre[]> {
     // find untuk get atau menampilkan data dalam mongo db
-    return await GenreModel.find();
+    return await GenreModel.find().populate({
+      path: "movies",
+      model: "Movie",
+      select: "title slug thumbnail",
+    });
   }
   async postData(data: Genre): Promise<Genre> {
     // create untuk insert data dalam mongo db
@@ -22,6 +26,10 @@ export class GenreRepositories implements IGenreRepositories {
   }
 
   async findDetailData(slug: string): Promise<Genre | null> {
-    return await GenreModel.findOne({ slug });
+    return await GenreModel.findOne({ slug }).populate({
+      path: "movies",
+      model: "Movie",
+      select: "title slug thumbnail",
+    });
   }
 }
