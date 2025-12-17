@@ -78,7 +78,8 @@ export const postMovie = async (req: Request, res: Response) => {
       theaters: parseData.data.theaters as unknown as ObjectId[],
       thumbnail: files.thumbnail[0].filename,
       video_trailer: files.video_trailer[0].filename,
-    });                                                                                   
+      available: parseData.data.available ?? false,
+    });
 
     return res.status(200).json({
       message: "Success Post Data Movies",

@@ -28,7 +28,7 @@ export const movieSchema = z.object({
   theaters: z
     .array(z.string().min(1))
     .min(1, "At least one theater is required"),
-  available: z.boolean(),
+  available: z.coerce.boolean().optional(),
   description: z
     .string()
     .min(5, "Description must be at least 5 characters long"),
