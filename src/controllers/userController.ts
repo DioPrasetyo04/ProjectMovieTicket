@@ -4,14 +4,17 @@ import { UserService } from "../service/UserService";
 import { userSchema, userUpdateSchema } from "../utils/zodSchema";
 import path, { parse } from "node:path";
 import fs from "node:fs";
-import { walletServices } from "../service/walletServices";
+import { transactionServices } from "../service/transactionServices";
 import bcrypt from "bcrypt";
 import { TransactionRepositories } from "../repositories/TransactionRepositories";
+import { WalletRepositories } from "../repositories/WalletRepositories";
 
 const userRepos = new UserRepositories();
 const userServices = new UserService(userRepos);
 const Transaction = new TransactionRepositories();
-const walletService = new walletServices(Transaction as any);
+const Wallet = new WalletRepositories();
+const transactionService = new transactionServices(Transaction as any);
+const walletService = new transactionServices(Wallet as any);
 
 export const getAllUser = async (req: Request, res: Response) => {
   try {
@@ -256,7 +259,8 @@ export const getWalletUser = async (req: Request, res: Response) => {
 
 export const getTransactionUser = async (req: Request, res: Response) => {
   try {
-    const getAllDataTransaction = await walletService.findAllDataTransaction();
+    const getAllDataTransaction =
+      await transactionService.findAllDataTransaction();
     if (getAllDataTransaction.length === 0) {
       return res.status(200).json({
         data: [],

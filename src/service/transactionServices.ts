@@ -1,6 +1,6 @@
 import { TransactionRepositories } from "../repositories/TransactionRepositories";
 
-export class walletServices {
+export class transactionServices {
   protected transactionServices: any;
 
   constructor(private transactionRepositories: TransactionRepositories) {

@@ -4,7 +4,8 @@ import { WalletTransactions } from "../fitur_interfaces/InterfaceWalletTransacti
 const walletTransactionSchema = new mongoose.Schema({
   wallet_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Wallet",
+    ref: "wallets",
+    model: "Wallet",
     required: true,
   },
   price: {
