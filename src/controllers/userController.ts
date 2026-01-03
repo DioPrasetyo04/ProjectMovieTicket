@@ -5,13 +5,13 @@ import { userSchema, userUpdateSchema } from "../utils/zodSchema";
 import path, { parse } from "node:path";
 import fs from "node:fs";
 import { walletServices } from "../service/walletServices";
-import { WalletRepositories } from "../repositories/WalletRepositories";
 import bcrypt from "bcrypt";
+import { TransactionRepositories } from "../repositories/TransactionRepositories";
 
 const userRepos = new UserRepositories();
 const userServices = new UserService(userRepos);
-const walletRepos = new WalletRepositories();
-const walletService = new walletServices(walletRepos);
+const Transaction = new TransactionRepositories();
+const walletService = new walletServices(Transaction as any);
 
 export const getAllUser = async (req: Request, res: Response) => {
   try {
@@ -166,7 +166,7 @@ export const updateDataUser = async (req: Request, res: Response) => {
     }
 
     // umumnya salt yang digunakan adalah 10 untuk merandom password sebanyak 10 kali secara acak
-    if(req.body.password && parsedData.data.password){
+    if (req.body.password && parsedData.data.password) {
       parsedData.data.password = bcrypt.hashSync(parsedData.data.password, 10);
     }
 

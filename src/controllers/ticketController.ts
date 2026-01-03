@@ -52,7 +52,7 @@ export const transactionTicket = async (req: CustomRequest, res: Response) => {
       transaction_id: transaction._id,
     });
 
-    transaction.seats = transactionSeats.map((value) => value._id);
+    transaction.seats = transactionSeats.map((value) => value._id) as any;
 
     const currBalance = findWallet.balance ?? 0;
 

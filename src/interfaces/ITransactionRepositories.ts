@@ -1,7 +1,7 @@
-import type { TransactionSeat } from "../fitur_interfaces/InterfaceTransactionSeat";
+import { Transaction } from "../fitur_interfaces/InterfaceTransaction";
 
 interface ITransactionRepositories {
-  findAllDataTransaction(): Promise<TransactionSeat[] | null>;
+  findAllDataTransaction(): Promise<Transaction[] | null>;
 }
 
 export default ITransactionRepositories;

@@ -1,29 +1,32 @@
-import { TransactionSeat } from "../fitur_interfaces/InterfaceTransactionSeat";
+import type { Transaction } from "../fitur_interfaces/InterfaceTransaction";
 import ITransactionRepositories from "../interfaces/ITransactionRepositories";
+import TransactionModel from "../models/TransactionModel";
 import TransactionSeatModel from "../models/TransactionSeatModel";
 
 export class TransactionRepositories implements ITransactionRepositories {
-  async findAllDataTransaction(): Promise<TransactionSeat[] | null> {
-    const data = await TransactionSeatModel.find().populate({
-      path: "transaction_id",
-      model: "Transaction",
-      select: "subtotal total bookingFee tax user_id movie_id theater_id",
-      populate: {
+  async findAllDataTransaction(): Promise<Transaction[] | null> {
+    const data = await TransactionModel.find()
+      .populate({
         path: "user_id",
         model: "User",
-        select: "name email",
-        populate: {
-          path: "movie_id",
-          model: "Movie",
-          select: "title slug",
-          populate: {
-            path: "theater_id",
-            model: "Theater",
-            select: "name city slug",
-          },
-        },
-      },
-    });
+        select: "name",
+      })
+      .populate({
+        path: "movie_id",
+        model: "Movie",
+        select: "title",
+      })
+      .populate({
+        path: "theater_id",
+        model: "Theater",
+        select: "name",
+      })
+      .populate({
+        path: "seats",
+        model: "TransactionSeat",
+        select: "transaction_id seat",
+      });
+
     return data;
   }
 }

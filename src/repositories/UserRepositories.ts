@@ -4,15 +4,13 @@ import UsersModel from "../models/UsersModel";
 
 export class UserRepositories implements IUserRepositories {
   async getAllDataUser(): Promise<User[] | null> {
-    return await UsersModel.find({ role: "customer" }).select("name email");
+    return await UsersModel.find().select("name email photo role");
   }
 
   async findDetailDataUser(email: string): Promise<User | null> {
-    const findUser = await UsersModel.findOne({ email })
-      .findOne({
-        role: "customer",
-      })
-      .select("name email");
+    const findUser = await UsersModel.findOne({ email }).select(
+      "name email photo role"
+    );
     return findUser;
   }
 

@@ -10,5 +10,5 @@ export interface Transaction {
   movie_id?: ObjectId;
   theater_id?: ObjectId;
   date?: String;
-  seats?: mongoose.Types.ObjectId[];
+  seats?: ObjectId[];
 }

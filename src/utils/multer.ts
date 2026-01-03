@@ -16,6 +16,8 @@ export const dynamicStorage = (): StorageEngine => {
         uploadPath = path.join("public", "images", "thumbnails");
       } else if (file.fieldname === "video_trailer") {
         uploadPath = path.join("public", "videos", "trailers");
+      } else if (file.fieldname === "photo") {
+        uploadPath = path.join("public", "images", "photos");
       } else {
         // callback error must provide a string path as second arg per types
         return cb(
@@ -85,6 +87,14 @@ export const fileFilter = (
   ) {
     return cb(new Error("Invalid video file type"), false);
   }
+
+  if (
+    file.fieldname === "photo" &&
+    !allowedFileTypesPhoto.includes(file.mimetype.split("/")[1])
+  ) {
+    return cb(new Error("Invalid photo file type"), false);
+  }
+
   cb(null, true);
 };
 

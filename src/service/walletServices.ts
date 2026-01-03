@@ -1,9 +1,9 @@
-import { IWalletRepositories } from "../interfaces/IWalletRepositories";
+import { TransactionRepositories } from "../repositories/TransactionRepositories";
 
 export class walletServices {
   protected transactionServices: any;
 
-  constructor(private transactionRepositories: IWalletRepositories) {
+  constructor(private transactionRepositories: TransactionRepositories) {
     this.transactionServices = transactionRepositories;
   }
 

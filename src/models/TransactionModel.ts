@@ -25,17 +25,20 @@ const transactionSchema = new mongoose.Schema(
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "users",
+      model: "User",
       required: true,
     },
     movie_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Movie",
+      ref: "movies",
+      model: "Movie",
       required: true,
     },
     theater_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Theater",
+      ref: "theaters",
+      model: "Theater",
       required: true,
     },
     date: {
@@ -44,7 +47,8 @@ const transactionSchema = new mongoose.Schema(
     },
     seats: [
       {
-        ref: "TransactionSeat",
+        ref: "transactionSeats",
+        model: "TransactionSeat",
         type: mongoose.Schema.Types.ObjectId,
         required: true,
       },
