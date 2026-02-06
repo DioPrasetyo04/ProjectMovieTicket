@@ -86,7 +86,7 @@ export const getMovieDetail = async (req: Request, res: Response) => {
     const movie = await MovieModel.findOne({ slug })
       .populate({
         path: "theaters",
-        select: "name city slug layout total_seats",
+        select: "name address city slug layout total_seats",
       })
       .populate({
         path: "genre",
@@ -102,7 +102,7 @@ export const getMovieDetail = async (req: Request, res: Response) => {
     }
 
     return res.status(200).json({
-      message: "Success Get Data Genres",
+      message: "Success Get Data Movies",
       data: {
         movie: {
           ...movie?.toJSON(),
@@ -122,13 +122,60 @@ export const getMovieDetail = async (req: Request, res: Response) => {
 
 export const getAvailableSeats = async (req: Request, res: Response) => {
   try {
-    const slug = req.params.slug as string;
-    const date = req.query.date as string;
+    const movieId = req.params.movieId;
+    const date = req.query.date as string | undefined;
 
-    const transactions = await TransactionModel.find({
-      date: date?.toString().replace("+", " "),
-      movie_id: slug,
-    })
+    const filter: any = {
+      movie_id: new mongoose.Types.ObjectId(movieId),
+    };
+
+    // kalau query date ada baru dipakai
+    if (date) {
+      const match = date.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})$/);
+
+      if (!match) {
+        return res.status(400).json({
+          message: "Invalid date format",
+          status: "false",
+        });
+      }
+
+      const [_, year, month, day, hour, minute] = match;
+
+      const dateObj = new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day),
+        Number(hour),
+        Number(minute),
+        0,
+        0,
+      );
+
+      if (isNaN(dateObj.getTime())) {
+        return res.status(400).json({
+          message: "Invalid date format",
+          status: "false",
+        });
+      }
+
+      /**
+       * ✅ RANGE FILTER (lebih aman daripada exact match)
+       * karena timestamp di DB bisa punya detik/millisecond
+       *
+       * range 1 menit:
+       * 12:30:00.000 - 12:30:59.999
+       */
+      const start = new Date(dateObj);
+      start.setSeconds(0, 0);
+
+      const end = new Date(start);
+      end.setMinutes(end.getMinutes() + 1);
+
+      filter.date = { $gte: start, $lt: end };
+    }
+
+    const transactions = await TransactionModel.find(filter)
       .select("seats")
       .populate({
         path: "seats",
@@ -136,14 +183,13 @@ export const getAvailableSeats = async (req: Request, res: Response) => {
         select: "seat",
       });
 
-    const seats = [];
-
-    for (const seat of transactions) {
-      seats.push(...(seat as any).seats);
+    const seats: any[] = [];
+    for (const trx of transactions) {
+      seats.push(...(trx as any).seats);
     }
 
     return res.status(200).json({
-      message: "Success Get Data Genres",
+      message: "Success Get Data Check Seats",
       data: seats,
       status: "true",
     });
@@ -166,6 +212,14 @@ export const getMoviesFilter = async (req: Request, res: Response) => {
     // console.log("Filter params:", { genreId, city, theaters, availability });
 
     let filterQuery = {} as any;
+
+    if (!genreId) {
+      return res.status(400).json({
+        message: "Genre ID is required",
+        data: null,
+        status: "false",
+      });
+    }
 
     if (genreId) {
       filterQuery = {
@@ -198,7 +252,7 @@ export const getMoviesFilter = async (req: Request, res: Response) => {
     if (theaters) {
       const theaterArray = Array.isArray(theaters) ? theaters : [theaters];
       const theaterList = theaterArray.map(
-        (theater) => new mongoose.Types.ObjectId(theater as string)
+        (theater) => new mongoose.Types.ObjectId(theater as string),
       );
 
       filterQuery = {
@@ -220,11 +274,11 @@ export const getMoviesFilter = async (req: Request, res: Response) => {
     const moviesFilter = await MovieModel.find({
       ...filterQuery,
     })
-      .select("title slug thumbnail genre theaters")
+      .select("_id title slug thumbnail genre theaters")
       .populate({
         path: "genre",
         model: "Genre",
-        select: "id name slug",
+        select: "_id name slug",
       })
       .populate({
         path: "theaters",
@@ -233,11 +287,11 @@ export const getMoviesFilter = async (req: Request, res: Response) => {
       });
 
     const allMovies = await MovieModel.find()
-      .select("title slug thumbnail genre theaters")
+      .select("_id title slug thumbnail genre theaters")
       .populate({
         path: "genre",
         model: "Genre",
-        select: "id name slug",
+        select: "_id name slug",
       })
       .populate({
         path: "theaters",

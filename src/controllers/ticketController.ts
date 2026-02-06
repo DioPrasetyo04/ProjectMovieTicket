@@ -9,19 +9,11 @@ import WalletTransactionModel from "../models/WalletTransactionModel";
 
 export const transactionTicket = async (req: CustomRequest, res: Response) => {
   try {
-    const parseData = transactionSchema.safeParse(req.body);
-
-    if (!parseData.success) {
-      return res.status(400).json({
-        message: "Invalid Request Data",
-        error_data: parseData.error.issues.map((err) => err.message).join(","),
-        status: "false",
-      });
-    }
+    const data = req.body as z.infer<typeof transactionSchema>;
 
     const findWallet = await WalletModel.findOne({ user_id: req.user?.id });
 
-    if (!findWallet || findWallet.balance < parseData.data.total) {
+    if (!findWallet || findWallet.balance < data.total) {
       return res.status(400).json({
         message: "Insufficent Balance, please top up your balance first",
         data: null,
@@ -30,16 +22,17 @@ export const transactionTicket = async (req: CustomRequest, res: Response) => {
     }
 
     const transaction = new TransactionModel({
-      bookingFee: parseData.data.bookingFee,
-      subtotal: parseData.data.subtotal,
-      tax: parseData.data.tax,
-      theater_id: parseData.data.theaterId,
-      movie_id: parseData.data.movieId,
+      bookingFee: data.bookingFee,
+      subtotal: data.subtotal,
+      tax: data.tax,
+      total: data.total,
+      theater_id: data.theaterId,
+      movie_id: data.movieId,
       user_id: req.user?.id,
-      date: parseData.data.date,
+      date: data.date,
     });
 
-    for (const seat of parseData.data.seats) {
+    for (const seat of data.seats) {
       const newSeat = new TransactionSeatModel({
         transaction_id: transaction._id,
         seat: seat,
@@ -58,7 +51,7 @@ export const transactionTicket = async (req: CustomRequest, res: Response) => {
 
     const updateWallet = await WalletModel.findByIdAndUpdate(findWallet._id, {
       $set: {
-        balance: currBalance - parseData.data.total,
+        balance: currBalance - data.total,
       },
       new: true,
     }).select("balance");

@@ -23,42 +23,43 @@ const transactionSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
-      model: "User",
+      ref: "User",
       required: true,
     },
+
     movie_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "movies",
-      model: "Movie",
+      ref: "Movie",
       required: true,
     },
+
     theater_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "theaters",
-      model: "Theater",
+      ref: "Theater",
       required: true,
     },
+
     date: {
       type: Date,
       required: true,
     },
+
     seats: [
       {
-        ref: "transactionSeats",
-        model: "TransactionSeat",
         type: mongoose.Schema.Types.ObjectId,
+        ref: "TransactionSeat",
         required: true,
       },
     ],
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model<Transaction>(
   "Transaction",
   transactionSchema,
-  "transactions"
+  "transactions",
 );

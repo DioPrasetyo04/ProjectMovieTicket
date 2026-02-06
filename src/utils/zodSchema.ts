@@ -67,6 +67,9 @@ export const transactionSchema = z
     movieId: z.string().min(1, "Movie ID is required"),
     theaterId: z.string().min(1, "Theater ID is required"),
     seats: z.array(z.string()).min(1, "At least one seat is required"),
-    date: z.string(),
+    date: z
+      .string()
+      .datetime()
+      .transform((val) => new Date(val)),
   })
   .strict();

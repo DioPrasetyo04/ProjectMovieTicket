@@ -1,6 +1,10 @@
 import express from "express";
 import homeRoutes from "./homeRoutes";
-import { verifyRole, verifyRoles, verifyToken } from "../../middlewares/verifyToken";
+import {
+  verifyRole,
+  verifyRoles,
+  verifyToken,
+} from "../../middlewares/verifyToken";
 import walletRoutes from "./walletRoutes";
 
 const customerRoutes = express.Router();
